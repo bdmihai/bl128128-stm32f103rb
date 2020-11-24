@@ -21,7 +21,7 @@
  | THE USE OR OTHER DEALINGS IN THE SOFTWARE.                                 |
  |____________________________________________________________________________|
  |                                                                            |
- |  Author: Mihai Baneu                           Last modified: 12.Nov.2020  |
+ |  Author: Mihai Baneu                           Last modified: 24.Nov.2020  |
  |                                                                            |
  |___________________________________________________________________________*/
  
@@ -90,28 +90,30 @@
 #define SSD1339_XWRAPCOPY_ENABLE                    0x20
 #define SSD1339_XWRAPCOPY_DISABLE                   0x00
 
-// custom display resolution
-#define SSD1339_MAX_COLS 128
-#define SSD1339_MAX_RWOS 128
+// display resolution
+#define SSD1339_MAX_COLS                            132
+#define SSD1339_MAX_RWOS                            133
+#define SSD1339_128_COLS                            128
+#define SSD1339_128_RWOS                            128
 
 // standard RGB15 colors
-#define SSD1339_RGB(R,G,B)     ((((uint16_t)B >> 3) << 11) + (((uint16_t)G >> 2) << 5) + ((uint16_t)R >> 3))
-#define SSD1339_BLACK          SSD1339_RGB(0,0,0)
-#define SSD1339_WHITE          SSD1339_RGB(255,255,255)
-#define SSD1339_RED	           SSD1339_RGB(255,0,0)
-#define SSD1339_LIME           SSD1339_RGB(0,255,0)
-#define SSD1339_BLUE           SSD1339_RGB(0,0,255)
-#define SSD1339_YELLOW         SSD1339_RGB(255,255,0)
-#define SSD1339_CYAN           SSD1339_RGB(0,255,255)
-#define SSD1339_MAGENTA        SSD1339_RGB(255,0,255)
-#define SSD1339_SILVER         SSD1339_RGB(192,192,192)
-#define SSD1339_GRAY           SSD1339_RGB(128,128,128)
-#define SSD1339_MAROON         SSD1339_RGB(128,0,0)
-#define SSD1339_OLIVE          SSD1339_RGB(128,128,0)
-#define SSD1339_GREEN          SSD1339_RGB(0,128,0)
-#define SSD1339_PURPLE         SSD1339_RGB(128,0,128)
-#define SSD1339_TEAL           SSD1339_RGB(0,128,128)
-#define SSD1339_NAVY           SSD1339_RGB(0,0,128)
+#define SSD1339_RGB(R,G,B)                          ((((uint16_t)B >> 3) << 11) + (((uint16_t)G >> 2) << 5) + ((uint16_t)R >> 3))
+#define SSD1339_BLACK                               SSD1339_RGB(0,0,0)
+#define SSD1339_WHITE                               SSD1339_RGB(255,255,255)
+#define SSD1339_RED	                                SSD1339_RGB(255,0,0)
+#define SSD1339_LIME                                SSD1339_RGB(0,255,0)
+#define SSD1339_BLUE                                SSD1339_RGB(0,0,255)
+#define SSD1339_YELLOW                              SSD1339_RGB(255,255,0)
+#define SSD1339_CYAN                                SSD1339_RGB(0,255,255)
+#define SSD1339_MAGENTA                             SSD1339_RGB(255,0,255)
+#define SSD1339_SILVER                              SSD1339_RGB(192,192,192)
+#define SSD1339_GRAY                                SSD1339_RGB(128,128,128)
+#define SSD1339_MAROON                              SSD1339_RGB(128,0,0)
+#define SSD1339_OLIVE                               SSD1339_RGB(128,128,0)
+#define SSD1339_GREEN                               SSD1339_RGB(0,128,0)
+#define SSD1339_PURPLE                              SSD1339_RGB(128,0,128)
+#define SSD1339_TEAL                                SSD1339_RGB(0,128,128)
+#define SSD1339_NAVY                                SSD1339_RGB(0,0,128)
 
 /* basic communication */
 void ssd1339_init();

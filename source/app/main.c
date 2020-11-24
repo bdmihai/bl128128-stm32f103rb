@@ -21,7 +21,7 @@
  | THE USE OR OTHER DEALINGS IN THE SOFTWARE.                                 |
  |____________________________________________________________________________|
  |                                                                            |
- |  Author: Mihai Baneu                           Last modified: 23.Nov.2020  |
+ |  Author: Mihai Baneu                           Last modified: 24.Nov.2020  |
  |                                                                            |
  |___________________________________________________________________________*/
 
@@ -69,8 +69,8 @@ static void vTaskDisplay(void *pvParameters)
     };
 
     ssd1339_init();
-    ssd1339_set_column_address(0, SSD1339_MAX_COLS-1);
-    ssd1339_set_row_address(0, SSD1339_MAX_RWOS-1);
+    ssd1339_set_column_address(0, SSD1339_128_COLS-1);
+    ssd1339_set_row_address(0, SSD1339_128_RWOS-1);
     ssd1339_set_map_and_color_depth(SSD1339_REMAP_MODE_ODD_EVEN | SSD1339_COLOR_MODE_65K);
     ssd1339_set_use_buildin_lut();
     ssd1339_set_sleep_mode(SSD1339_SLEEP_OFF);
@@ -82,53 +82,53 @@ static void vTaskDisplay(void *pvParameters)
 
     uint8_t all = 0;
     for (;;) {
-        //goto draw_clear;
+        //goto draw_copy;
         all = 1;
 
 fill_screen:
-        ssd1339_draw_fill(0, 0, SSD1339_MAX_RWOS, SSD1339_MAX_COLS, SSD1339_BLUE);
+        ssd1339_draw_fill(0, 0, SSD1339_128_RWOS, SSD1339_128_COLS, SSD1339_BLUE);
         vTaskDelay(500 / portTICK_PERIOD_MS);
 
-        ssd1339_draw_fill(0, 0, SSD1339_MAX_RWOS, SSD1339_MAX_COLS, SSD1339_GREEN);
+        ssd1339_draw_fill(0, 0, SSD1339_128_RWOS, SSD1339_128_COLS, SSD1339_GREEN);
         vTaskDelay(500 / portTICK_PERIOD_MS);
 
-        ssd1339_draw_fill(0, 0, SSD1339_MAX_RWOS, SSD1339_MAX_COLS, SSD1339_RED);
+        ssd1339_draw_fill(0, 0, SSD1339_128_RWOS, SSD1339_128_COLS, SSD1339_RED);
         vTaskDelay(500 / portTICK_PERIOD_MS);
 
-        ssd1339_draw_fill(0, 0, SSD1339_MAX_RWOS, SSD1339_MAX_COLS, SSD1339_WHITE);
+        ssd1339_draw_fill(0, 0, SSD1339_128_RWOS, SSD1339_128_COLS, SSD1339_WHITE);
         vTaskDelay(500 / portTICK_PERIOD_MS);
 
         if (!all) continue;
 
 direct_ram_access:
-        ssd1339_draw_gradient_hfill(0, 0, SSD1339_MAX_RWOS, SSD1339_MAX_COLS, SSD1339_BLUE);
+        ssd1339_draw_gradient_hfill(0, 0, SSD1339_128_RWOS, SSD1339_128_COLS, SSD1339_BLUE);
         vTaskDelay(500 / portTICK_PERIOD_MS);
 
-        ssd1339_draw_gradient_hfill(0, 0, SSD1339_MAX_RWOS, SSD1339_MAX_COLS, SSD1339_LIME);
+        ssd1339_draw_gradient_hfill(0, 0, SSD1339_128_RWOS, SSD1339_128_COLS, SSD1339_LIME);
         vTaskDelay(500 / portTICK_PERIOD_MS);
         
-        ssd1339_draw_gradient_hfill(0, 0, SSD1339_MAX_RWOS, SSD1339_MAX_COLS, SSD1339_RED);
+        ssd1339_draw_gradient_hfill(0, 0, SSD1339_128_RWOS, SSD1339_128_COLS, SSD1339_RED);
         vTaskDelay(500 / portTICK_PERIOD_MS);
 
-        ssd1339_draw_gradient_hfill(0, 0, SSD1339_MAX_RWOS, SSD1339_MAX_COLS, SSD1339_WHITE);
+        ssd1339_draw_gradient_hfill(0, 0, SSD1339_128_RWOS, SSD1339_128_COLS, SSD1339_WHITE);
         vTaskDelay(500 / portTICK_PERIOD_MS);
 
-        ssd1339_draw_gradient_vfill(0, 0, SSD1339_MAX_RWOS, SSD1339_MAX_COLS, SSD1339_BLUE);
+        ssd1339_draw_gradient_vfill(0, 0, SSD1339_128_RWOS, SSD1339_128_COLS, SSD1339_BLUE);
         vTaskDelay(500 / portTICK_PERIOD_MS);
 
-        ssd1339_draw_gradient_vfill(0, 0, SSD1339_MAX_RWOS, SSD1339_MAX_COLS, SSD1339_LIME);
+        ssd1339_draw_gradient_vfill(0, 0, SSD1339_128_RWOS, SSD1339_128_COLS, SSD1339_LIME);
         vTaskDelay(500 / portTICK_PERIOD_MS);
         
-        ssd1339_draw_gradient_vfill(0, 0, SSD1339_MAX_RWOS, SSD1339_MAX_COLS, SSD1339_RED);
+        ssd1339_draw_gradient_vfill(0, 0, SSD1339_128_RWOS, SSD1339_128_COLS, SSD1339_RED);
         vTaskDelay(500 / portTICK_PERIOD_MS);
 
-        ssd1339_draw_gradient_vfill(0, 0, SSD1339_MAX_RWOS, SSD1339_MAX_COLS, SSD1339_WHITE);
+        ssd1339_draw_gradient_vfill(0, 0, SSD1339_128_RWOS, SSD1339_128_COLS, SSD1339_WHITE);
         vTaskDelay(500 / portTICK_PERIOD_MS);
 
         if (!all) continue;
 
 region_fill:
-        ssd1339_draw_fill(0, 0, SSD1339_MAX_RWOS, SSD1339_MAX_COLS, SSD1339_WHITE);
+        ssd1339_draw_fill(0, 0, SSD1339_128_RWOS, SSD1339_128_COLS, SSD1339_WHITE);
         vTaskDelay(100 / portTICK_PERIOD_MS);
 
         ssd1339_draw_fill(10, 20, 30, 100, SSD1339_BLUE);
@@ -164,14 +164,14 @@ check_colors:
         if (!all) continue;
 
 check_white:
-        ssd1339_draw_fill(0, 0, SSD1339_MAX_RWOS, SSD1339_MAX_COLS, SSD1339_WHITE);
+        ssd1339_draw_fill(0, 0, SSD1339_128_RWOS, SSD1339_128_COLS, SSD1339_WHITE);
         vTaskDelay(1000 / portTICK_PERIOD_MS);
 
         if (!all) continue;
 
 draw_line:
         // 45 deg lines examples
-        ssd1339_draw_fill(0, 0, SSD1339_MAX_RWOS, SSD1339_MAX_COLS, SSD1339_BLACK);
+        ssd1339_draw_fill(0, 0, SSD1339_128_RWOS, SSD1339_128_COLS, SSD1339_BLACK);
         vTaskDelay(100 / portTICK_PERIOD_MS);
         for (int i = 0; i < 128; i += 16) {
             ssd1339_draw_line(0, 0, i, 127, SSD1339_WHITE);
@@ -195,19 +195,19 @@ draw_line:
         // 135 deg lines examples
         ssd1339_set_map_and_color_depth(SSD1339_REMAP_MODE_131_SEG0 | SSD1339_REMAP_MODE_ODD_EVEN | SSD1339_COLOR_MODE_65K);
         for (int i = 0; i < 128; i += 16) {
-            ssd1339_draw_line(4, 0, i+4, 127, SSD1339_WHITE);
+            ssd1339_draw_line(SSD1339_MAX_COLS-SSD1339_128_COLS, 0, i+(SSD1339_MAX_COLS-SSD1339_128_COLS), 127, SSD1339_WHITE);
             vTaskDelay(100 / portTICK_PERIOD_MS);
         }
         for (int i = 0; i < 128; i += 16) {
-            ssd1339_draw_line(4, 0, 127+4, i, SSD1339_WHITE);
+            ssd1339_draw_line(SSD1339_MAX_COLS-SSD1339_128_COLS, 0, SSD1339_MAX_COLS-1, i, SSD1339_WHITE);
             vTaskDelay(100 / portTICK_PERIOD_MS);
         }
         for (int i = 0; i < 128; i += 16) {
-            ssd1339_draw_line(4, i, 127+4, 127, SSD1339_WHITE);
+            ssd1339_draw_line(SSD1339_MAX_COLS-SSD1339_128_COLS, i, SSD1339_MAX_COLS-1, 127, SSD1339_WHITE);
             vTaskDelay(100 / portTICK_PERIOD_MS);
         }
         for (int i = 0; i < 128; i += 16) {
-            ssd1339_draw_line(i+4, 0, 127+4, 127, SSD1339_WHITE);
+            ssd1339_draw_line(i+(SSD1339_MAX_COLS-SSD1339_128_COLS), 0, SSD1339_MAX_COLS-1, 127, SSD1339_WHITE);
             vTaskDelay(100 / portTICK_PERIOD_MS);
         }
         ssd1339_set_map_and_color_depth(SSD1339_REMAP_MODE_0_SEG0 | SSD1339_REMAP_MODE_ODD_EVEN | SSD1339_COLOR_MODE_65K);
@@ -216,7 +216,7 @@ draw_line:
         if (!all) continue;
 
 draw_rectangle:
-        ssd1339_draw_fill(0, 0, SSD1339_MAX_RWOS, SSD1339_MAX_COLS, SSD1339_BLACK);
+        ssd1339_draw_fill(0, 0, SSD1339_128_RWOS, SSD1339_128_COLS, SSD1339_BLACK);
         vTaskDelay(500 / portTICK_PERIOD_MS);
 
         ssd1339_set_fill_copy_mode(SSD1339_FILLMODE_DISABLE);
@@ -229,7 +229,7 @@ draw_rectangle:
         if (!all) continue;
 
 draw_filled_rectangle:
-        ssd1339_draw_fill(0, 0, SSD1339_MAX_RWOS, SSD1339_MAX_COLS, SSD1339_BLACK);
+        ssd1339_draw_fill(0, 0, SSD1339_128_RWOS, SSD1339_128_COLS, SSD1339_BLACK);
         vTaskDelay(500 / portTICK_PERIOD_MS);
 
         ssd1339_set_fill_copy_mode(SSD1339_FILLMODE_ENABLE);
@@ -242,7 +242,7 @@ draw_filled_rectangle:
         if (!all) continue;
 
 draw_circle:
-        ssd1339_draw_fill(0, 0, SSD1339_MAX_RWOS, SSD1339_MAX_COLS, SSD1339_BLACK);
+        ssd1339_draw_fill(0, 0, SSD1339_128_RWOS, SSD1339_128_COLS, SSD1339_BLACK);
         vTaskDelay(500 / portTICK_PERIOD_MS);
 
         ssd1339_set_fill_copy_mode(SSD1339_FILLMODE_DISABLE);
@@ -255,7 +255,7 @@ draw_circle:
         if (!all) continue;
 
 draw_filled_circle:
-        ssd1339_draw_fill(0, 0, SSD1339_MAX_RWOS, SSD1339_MAX_COLS, SSD1339_BLACK);
+        ssd1339_draw_fill(0, 0, SSD1339_128_RWOS, SSD1339_128_COLS, SSD1339_BLACK);
         vTaskDelay(500 / portTICK_PERIOD_MS);
 
         ssd1339_set_fill_copy_mode(SSD1339_FILLMODE_ENABLE);
@@ -274,7 +274,7 @@ draw_image:
         if (!all) continue;
 
 draw_text:
-        ssd1339_draw_fill(0, 0, SSD1339_MAX_RWOS, SSD1339_MAX_COLS, SSD1339_BLACK);
+        ssd1339_draw_fill(0, 0, SSD1339_128_RWOS, SSD1339_128_COLS, SSD1339_BLACK);
         vTaskDelay(500 / portTICK_PERIOD_MS);
 
         ssd1339_draw_string(u8x8_font_8x13B_1x2_f, 2*8, 7*8, SSD1339_WHITE, SSD1339_BLACK, "Hello: ");
@@ -288,12 +288,16 @@ draw_text:
         if (!all) continue;
 
 draw_copy:
-        ssd1339_draw_fill(0, 0, SSD1339_MAX_RWOS, SSD1339_MAX_COLS, SSD1339_BLACK);
+        ssd1339_draw_fill(0, 0, SSD1339_128_RWOS, SSD1339_128_COLS, SSD1339_BLACK);
         ssd1339_set_fill_copy_mode(SSD1339_FILLMODE_ENABLE);
         ssd1339_draw_rectangle(25, 25, 45, 45, SSD1339_WHITE, SSD1339_BLUE);
         vTaskDelay(1 / portTICK_PERIOD_MS);
         ssd1339_draw_line(25, 25, 45, 45, SSD1339_WHITE);
-        ssd1339_draw_line(25, 45, 45, 25, SSD1339_WHITE);
+        vTaskDelay(1 / portTICK_PERIOD_MS);
+        ssd1339_set_map_and_color_depth(SSD1339_REMAP_MODE_131_SEG0 | SSD1339_REMAP_MODE_ODD_EVEN | SSD1339_COLOR_MODE_65K);
+        ssd1339_draw_line(SSD1339_MAX_COLS-1-45, 25, SSD1339_MAX_COLS-1-25, 45, SSD1339_WHITE);
+        vTaskDelay(1 / portTICK_PERIOD_MS);
+        ssd1339_set_map_and_color_depth(SSD1339_REMAP_MODE_0_SEG0 | SSD1339_REMAP_MODE_ODD_EVEN | SSD1339_COLOR_MODE_65K);
         vTaskDelay(500 / portTICK_PERIOD_MS);
         ssd1339_draw_copy(25, 25, 45, 45, 50, 25);
         vTaskDelay(500 / portTICK_PERIOD_MS);
@@ -309,7 +313,7 @@ draw_copy:
         if (!all) continue;
 
 draw_dim:
-        ssd1339_draw_fill(0, 0, SSD1339_MAX_RWOS, SSD1339_MAX_COLS, SSD1339_BLACK);
+        ssd1339_draw_fill(0, 0, SSD1339_128_RWOS, SSD1339_128_COLS, SSD1339_BLACK);
         vTaskDelay(500 / portTICK_PERIOD_MS);
 
         ssd1339_set_fill_copy_mode(SSD1339_FILLMODE_ENABLE);
@@ -330,7 +334,7 @@ draw_dim:
         if (!all) continue;
 
 draw_clear:
-        ssd1339_draw_fill(0, 0, SSD1339_MAX_RWOS, SSD1339_MAX_COLS, SSD1339_BLACK);
+        ssd1339_draw_fill(0, 0, SSD1339_128_RWOS, SSD1339_128_COLS, SSD1339_BLACK);
         vTaskDelay(500 / portTICK_PERIOD_MS);
 
         ssd1339_set_fill_copy_mode(SSD1339_FILLMODE_ENABLE);

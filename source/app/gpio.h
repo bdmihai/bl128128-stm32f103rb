@@ -21,7 +21,7 @@
  | THE USE OR OTHER DEALINGS IN THE SOFTWARE.                                 |
  |____________________________________________________________________________|
  |                                                                            |
- |  Author: Mihai Baneu                           Last modified: 15.May.2020  |
+ |  Author: Mihai Baneu                           Last modified: 24.Nov.2020  |
  |                                                                            |
  |___________________________________________________________________________*/
  
@@ -32,17 +32,3 @@ void vGPIOInit();
 void vGPIOSetLed();
 void vGPIOResetLed();
 
-void vGPIOSetRES();
-void vGPIOResetRES();
-void vGPIOSetCS();
-void vGPIOResetCS();
-void vGPIOSetDC();
-void vGPIOResetDC();
-void vGPIOSetRD();
-void vGPIOResetRD();
-void vGPIOSetWR();
-void vGPIOResetWR();
-void vGPIOConfigDataOut();
-void vGPIOConfigDataIn();
-void vGPIOWriteData(uint8_t data);
-uint8_t vGPIOReadData();

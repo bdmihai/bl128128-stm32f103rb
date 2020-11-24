@@ -21,7 +21,7 @@
  | THE USE OR OTHER DEALINGS IN THE SOFTWARE.                                 |
  |____________________________________________________________________________|
  |                                                                            |
- |  Author: Mihai Baneu                           Last modified: 12.Nov.2020  |
+ |  Author: Mihai Baneu                           Last modified: 24.Nov.2020  |
  |                                                                            |
  |___________________________________________________________________________*/
 
@@ -34,31 +34,69 @@
 
 #include "stm32f1xx.h"
 #include "ssd1339.h"
-#include "gpio.h"
 
-#define RES_HIGH    vGPIOSetRES()
-#define RES_LOW     vGPIOResetRES()
-#define CS_HIGH     vGPIOSetCS()
-#define CS_LOW      vGPIOResetCS()
-#define DC_HIGH     vGPIOSetDC()
-#define DC_LOW      vGPIOResetDC()
-#define WR_HIGH     vGPIOSetWR()
-#define WR_LOW      vGPIOResetWR()
-#define RD_HIGH     vGPIOSetRD()
-#define RD_LOW      vGPIOResetRD()
-#define DATA_OUT    vGPIOConfigDataOut()
-#define DATA_IN     vGPIOConfigDataIn()
-#define DATA_WR(d)  vGPIOWriteData(d)
-#define DATA_RD     vGPIOReadData()
+#define CS_HIGH        (GPIOB->BSRR = GPIO_BSRR_BS5)
+#define CS_LOW         (GPIOB->BSRR = GPIO_BSRR_BR5)
+#define RES_HIGH       (GPIOB->BSRR = GPIO_BSRR_BS6)
+#define RES_LOW        (GPIOB->BSRR = GPIO_BSRR_BR6)
+#define DC_HIGH        (GPIOB->BSRR = GPIO_BSRR_BS7)
+#define DC_LOW         (GPIOB->BSRR = GPIO_BSRR_BR7)
+#define WR_HIGH        (GPIOB->BSRR = GPIO_BSRR_BS8)
+#define WR_LOW         (GPIOB->BSRR = GPIO_BSRR_BR8)
+#define RD_HIGH        (GPIOB->BSRR = GPIO_BSRR_BS9)
+#define RD_LOW         (GPIOB->BSRR = GPIO_BSRR_BR9)
+#define CS_WR_HIGH     (GPIOB->BSRR = GPIO_BSRR_BS5 | GPIO_BSRR_BS8)
+#define CS_WR_LOW      (GPIOB->BSRR = GPIO_BSRR_BR5 | GPIO_BSRR_BR8)
+#define CS_RD_HIGH     (GPIOB->BSRR = GPIO_BSRR_BS5 | GPIO_BSRR_BS9)
+#define CS_RD_LOW      (GPIOB->BSRR = GPIO_BSRR_BR5 | GPIO_BSRR_BR9)
+#define DC_CS_WR_HIGH  (GPIOB->BSRR = GPIO_BSRR_BS5 | GPIO_BSRR_BS8 | GPIO_BSRR_BS7)
+#define DC_CS_WR_LOW   (GPIOB->BSRR = GPIO_BSRR_BR5 | GPIO_BSRR_BR8 | GPIO_BSRR_BR7)
+#define DATA_WR(d)     (GPIOA->ODR = d)
+#define DATA_RD        (GPIOA->IDR)
+
+static void ssd1339_config_data_out()
+{
+    /* set the pis 0-7 as output low speed (max 2MHz) */
+    MODIFY_REG(GPIOA->CRL, GPIO_CRL_CNF0_Msk | GPIO_CRL_MODE0_Msk, GPIO_CRL_MODE0_1);
+    MODIFY_REG(GPIOA->CRL, GPIO_CRL_CNF1_Msk | GPIO_CRL_MODE1_Msk, GPIO_CRL_MODE1_1);
+    MODIFY_REG(GPIOA->CRL, GPIO_CRL_CNF2_Msk | GPIO_CRL_MODE2_Msk, GPIO_CRL_MODE2_1);
+    MODIFY_REG(GPIOA->CRL, GPIO_CRL_CNF3_Msk | GPIO_CRL_MODE3_Msk, GPIO_CRL_MODE3_1);
+    MODIFY_REG(GPIOA->CRL, GPIO_CRL_CNF4_Msk | GPIO_CRL_MODE4_Msk, GPIO_CRL_MODE4_1);
+    MODIFY_REG(GPIOA->CRL, GPIO_CRL_CNF5_Msk | GPIO_CRL_MODE5_Msk, GPIO_CRL_MODE5_1);
+    MODIFY_REG(GPIOA->CRL, GPIO_CRL_CNF6_Msk | GPIO_CRL_MODE6_Msk, GPIO_CRL_MODE6_1);
+    MODIFY_REG(GPIOA->CRL, GPIO_CRL_CNF7_Msk | GPIO_CRL_MODE7_Msk, GPIO_CRL_MODE7_1);
+}
+
+static void ssd1339_config_data_in()
+{
+    /* set the pis 0-7 as input floating*/
+    MODIFY_REG(GPIOA->CRL, GPIO_CRL_CNF0_Msk | GPIO_CRL_MODE0_Msk, GPIO_CRL_CNF0_1);
+    MODIFY_REG(GPIOA->CRL, GPIO_CRL_CNF1_Msk | GPIO_CRL_MODE1_Msk, GPIO_CRL_CNF1_1);
+    MODIFY_REG(GPIOA->CRL, GPIO_CRL_CNF2_Msk | GPIO_CRL_MODE2_Msk, GPIO_CRL_CNF2_1);
+    MODIFY_REG(GPIOA->CRL, GPIO_CRL_CNF3_Msk | GPIO_CRL_MODE3_Msk, GPIO_CRL_CNF3_1);
+    MODIFY_REG(GPIOA->CRL, GPIO_CRL_CNF4_Msk | GPIO_CRL_MODE4_Msk, GPIO_CRL_CNF4_1);
+    MODIFY_REG(GPIOA->CRL, GPIO_CRL_CNF5_Msk | GPIO_CRL_MODE5_Msk, GPIO_CRL_CNF5_1);
+    MODIFY_REG(GPIOA->CRL, GPIO_CRL_CNF6_Msk | GPIO_CRL_MODE6_Msk, GPIO_CRL_CNF6_1);
+    MODIFY_REG(GPIOA->CRL, GPIO_CRL_CNF7_Msk | GPIO_CRL_MODE7_Msk, GPIO_CRL_CNF7_1);
+}
+
+static void ssd1339_config_control_out()
+{
+    /* set the pis B5-9 as output low speed (max 2MHz) */
+    MODIFY_REG(GPIOB->CRL, GPIO_CRL_CNF5_Msk | GPIO_CRL_MODE5_Msk, GPIO_CRL_MODE5_1);
+    MODIFY_REG(GPIOB->CRL, GPIO_CRL_CNF6_Msk | GPIO_CRL_MODE6_Msk, GPIO_CRL_MODE6_1);
+    MODIFY_REG(GPIOB->CRL, GPIO_CRL_CNF7_Msk | GPIO_CRL_MODE7_Msk, GPIO_CRL_MODE7_1);
+    MODIFY_REG(GPIOB->CRH, GPIO_CRH_CNF8_Msk | GPIO_CRH_MODE8_Msk, GPIO_CRH_MODE8_1);
+    MODIFY_REG(GPIOB->CRH, GPIO_CRH_CNF9_Msk | GPIO_CRH_MODE9_Msk, GPIO_CRH_MODE9_1);
+}
 
 void ssd1339_init()
 {
+    ssd1339_config_control_out();
+    ssd1339_config_data_out();
+    DC_CS_WR_HIGH;
     RES_HIGH;
-    CS_HIGH;
-    DC_HIGH;
-    WR_HIGH;
     RD_HIGH;
-    DATA_OUT;
 }
 
 void ssd1339_reset_on()
@@ -73,59 +111,47 @@ void ssd1339_reset_off()
 
 void ssd1339_command(uint8_t command)
 {
-    DC_LOW;
-    CS_LOW;
-    WR_LOW;
+    DC_CS_WR_LOW;
     DATA_WR(command);
-    WR_HIGH;
-    CS_HIGH;
-    DC_HIGH;
+    DC_CS_WR_HIGH;
 }
 
 void ssd1339_write8(uint8_t data)
 {
-    CS_LOW;
-    WR_LOW;
+    CS_WR_LOW;
     DATA_WR(data);
-    WR_HIGH;
-    CS_HIGH;
+    CS_WR_HIGH;
 }
 
 void ssd1339_write16(uint16_t data)
 {
-    CS_LOW;
-    WR_LOW;
+    CS_WR_LOW;
     DATA_WR((data >> 8) & 0xFF);
-    WR_HIGH;
-    CS_HIGH;
-    CS_LOW;
-    WR_LOW;
+    CS_WR_HIGH;
+    CS_WR_LOW;
     DATA_WR(data & 0xFF);
-    WR_HIGH;
-    CS_HIGH;
+    CS_WR_HIGH;
 }
 
 void ssd1339_write(const uint8_t *buffer, int size)
 {
     while (size--) {
-        CS_LOW;
-        WR_LOW;
+        CS_WR_LOW;
         DATA_WR(*(buffer++));
-        WR_HIGH;
-        CS_HIGH;
+        CS_WR_HIGH;
     }
 }
 
 uint8_t ssd1339_read8()
 {
     uint8_t data;
-    DATA_IN;
+    ssd1339_config_data_in();
     CS_LOW;
     RD_LOW;
     data = DATA_RD;
     RD_HIGH;
     CS_HIGH;
-    DATA_OUT;
+    ssd1339_config_data_out();
     return data;
 }
 
@@ -364,10 +390,10 @@ void ssd1339_draw_image(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, const ui
     ssd1339_set_column_address(x1, x2-1);
     ssd1339_set_row_address(y1, y2-1);
     ssd1339_set_write_ram();
-    ssd1339_write(img, (x2-x1) * (y2-y1) * 2);
+    ssd1339_write((const uint8_t *)img, (x2-x1) * (y2-y1) * 2);
 }
 
-static uint8_t ssd1339_get_font_data(adr)
+static uint8_t ssd1339_get_font_data(const uint8_t *adr)
 {
   return (*(const uint8_t *)(adr));
 }  
