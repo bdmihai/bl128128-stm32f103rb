@@ -45,6 +45,9 @@ build:
 build-with-commands:
 	/usr/bin/qbs build -d build -f source/project.qbs --jobs 16 config:$(CONFIG_MCU) --command-echo-mode command-line qbs.installRoot:bin qbs.targetPlatform:$(CONFIG_MCU)
 
+objdump:
+	arm-none-eabi-objdump -t  bin/application.elf
+	
 clean:
 	/usr/bin/qbs clean -d build config:$(CONFIG_MCU)
 
