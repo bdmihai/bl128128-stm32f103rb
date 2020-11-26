@@ -21,7 +21,7 @@
  | THE USE OR OTHER DEALINGS IN THE SOFTWARE.                                 |
  |____________________________________________________________________________|
  |                                                                            |
- |  Author: Mihai Baneu                           Last modified: 24.Nov.2020  |
+ |  Author: Mihai Baneu                           Last modified: 26.Nov.2020  |
  |                                                                            |
  |___________________________________________________________________________*/
 
@@ -54,7 +54,7 @@
 #define DATA_WR(d)     (GPIOA->ODR = d)
 #define DATA_RD        (GPIOA->IDR)
 
-static void ssd1339_config_data_out()
+static void config_data_out()
 {
     /* set the pis 0-7 as output low speed (max 2MHz) */
     MODIFY_REG(GPIOA->CRL, GPIO_CRL_CNF0_Msk | GPIO_CRL_MODE0_Msk, GPIO_CRL_MODE0_1);
@@ -67,7 +67,7 @@ static void ssd1339_config_data_out()
     MODIFY_REG(GPIOA->CRL, GPIO_CRL_CNF7_Msk | GPIO_CRL_MODE7_Msk, GPIO_CRL_MODE7_1);
 }
 
-static void ssd1339_config_data_in()
+static void config_data_in()
 {
     /* set the pis 0-7 as input floating*/
     MODIFY_REG(GPIOA->CRL, GPIO_CRL_CNF0_Msk | GPIO_CRL_MODE0_Msk, GPIO_CRL_CNF0_1);
@@ -80,7 +80,7 @@ static void ssd1339_config_data_in()
     MODIFY_REG(GPIOA->CRL, GPIO_CRL_CNF7_Msk | GPIO_CRL_MODE7_Msk, GPIO_CRL_CNF7_1);
 }
 
-static void ssd1339_config_control_out()
+static void config_control_out()
 {
     /* set the pis B5-9 as output low speed (max 2MHz) */
     MODIFY_REG(GPIOB->CRL, GPIO_CRL_CNF5_Msk | GPIO_CRL_MODE5_Msk, GPIO_CRL_MODE5_1);
@@ -92,8 +92,8 @@ static void ssd1339_config_control_out()
 
 void ssd1339_init()
 {
-    ssd1339_config_control_out();
-    ssd1339_config_data_out();
+    config_control_out();
+    config_data_out();
     DC_CS_WR_HIGH;
     RES_HIGH;
     RD_HIGH;
@@ -145,13 +145,13 @@ void ssd1339_write(const uint8_t *buffer, int size)
 uint8_t ssd1339_read8()
 {
     uint8_t data;
-    ssd1339_config_data_in();
+    config_data_in();
     CS_LOW;
     RD_LOW;
     data = DATA_RD;
     RD_HIGH;
     CS_HIGH;
-    ssd1339_config_data_out();
+    config_data_out();
     return data;
 }
 
@@ -393,76 +393,79 @@ void ssd1339_draw_image(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, const ui
     ssd1339_write((const uint8_t *)img, (x2-x1) * (y2-y1) * 2);
 }
 
-static uint8_t ssd1339_get_font_data(const uint8_t *adr)
+static uint8_t get_font_data(const uint8_t *adr)
 {
-  return (*(const uint8_t *)(adr));
-}  
-
-static void ssd1339_get_glyph_data(const uint8_t *font, uint8_t th, uint8_t tv, uint8_t encoding, uint8_t *buf, uint8_t tile_offset) 
-{
-  uint8_t first, last;
-  uint16_t offset;
-
-  first = ssd1339_get_font_data(font+0);
-  last = ssd1339_get_font_data(font+1);
-  if ( first <= encoding && encoding <= last )
-  {
-    offset = encoding;
-    offset -= first;
-    offset *= th * tv;
-    offset += tile_offset;
-    offset *= 8;
-    offset +=4;
-    for(uint8_t i = 0; i < 8; i++)
-    {
-      buf[i] = ssd1339_get_font_data(font+offset);
-      offset++;
-    }
-  }
-  else
-  {
-    for(uint8_t i = 0; i < 8; i++)
-    {
-      buf[i] = 0;
-    }
-  }  
+    return (*(const uint8_t *)(adr));
 }
 
-static void ssd1339_draw_tile(const uint8_t *buffer, uint8_t x, uint8_t y, uint16_t color, uint16_t background)
+static void get_glyph_data(const uint8_t *font, uint8_t th, uint8_t tv, uint8_t encoding, uint8_t *buf, uint8_t tile_offset)
 {
-  const uint8_t colormask[] = { 0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01 };
-  ssd1339_set_column_address(x, x+8-1);
-  ssd1339_set_row_address(y, y+8-1);
-  ssd1339_set_write_ram();
-  for (uint8_t i = 0; i < 8; i++) {
-    for (uint8_t j = 0; j < 8;j++) {
-      ssd1339_write16((buffer[j] & colormask[i]) ? color : background);
+    uint8_t first, last;
+    uint16_t offset;
+
+    first = get_font_data(font + 0);
+    last = get_font_data(font + 1);
+    if (first <= encoding && encoding <= last) {
+        offset = encoding;
+        offset -= first;
+        offset *= th * tv;
+        offset += tile_offset;
+        offset *= 8;
+        offset += 4;
+        for (uint8_t i = 0; i < 8; i++) {
+            buf[i] = get_font_data(font + offset);
+            offset++;
+        }
+    } else {
+        for (uint8_t i = 0; i < 8; i++) {
+            buf[i] = 0;
+        }
     }
-  }
 }
 
-static void ssd1339_draw_glyph(const uint8_t *font, uint8_t x, uint8_t y, uint8_t th, uint8_t tv, uint16_t color, uint16_t background, uint8_t encoding)
+static void draw_tile(const uint8_t *buffer, uint8_t x, uint8_t y, uint16_t color, uint16_t background)
 {
-  uint8_t buffer[8];
-  uint8_t tile = th*tv-1;
-
-  for (uint8_t yy = 0; yy < tv; yy++) {
-    for (uint8_t xx = 0; xx < th; xx++) {
-      ssd1339_get_glyph_data(font, th, tv, encoding, buffer, tile);
-      ssd1339_draw_tile(buffer, xx*8 + x, yy*8 + y, color, background);
-      tile--;
+    const uint8_t colormask[] = {0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01};
+    ssd1339_set_column_address(x, x + 8 - 1);
+    ssd1339_set_row_address(y, y + 8 - 1);
+    ssd1339_set_write_ram();
+    for (uint8_t i = 0; i < 8; i++) {
+        for (uint8_t j = 0; j < 8; j++) {
+            ssd1339_write16((buffer[j] & colormask[i]) ? color : background);
+        }
     }
-  }
+}
+
+static void draw_glyph(const uint8_t *font, uint8_t x, uint8_t y, uint8_t th, uint8_t tv, uint16_t color, uint16_t background, uint8_t encoding)
+{
+    uint8_t buffer[8];
+    uint8_t tile = 0;;
+
+    for (uint8_t yy = 0; yy < tv; yy++) {
+        for (uint8_t xx = 0; xx < th; xx++) {
+            get_glyph_data(font, th, tv, encoding, buffer, tile);
+            draw_tile(buffer, xx * 8 + x, (tv-yy-1) * 8 + y, color, background);
+            tile++;
+        }
+    }
+}
+
+void ssd1339_draw_char(const uint8_t *font, uint8_t x, uint8_t y, uint16_t color, uint16_t background, const char c)
+{
+    uint8_t th = get_font_data(font + 2);
+    uint8_t tv = get_font_data(font + 3);
+
+    draw_glyph(font, x, y, th, tv, color, background, c);
 }
 
 void ssd1339_draw_string(const uint8_t *font, uint8_t x, uint8_t y, uint16_t color, uint16_t background, const char *s)
 {
-  uint8_t th = ssd1339_get_font_data(font+2);
-  uint8_t tv = ssd1339_get_font_data(font+3);
+    uint8_t th = get_font_data(font + 2);
+    uint8_t tv = get_font_data(font + 3);
 
-  while (*s != 0) {
-    ssd1339_draw_glyph(font, x, y, th, tv, color, background, *s);
-    x += th*8;
-    s++;
-  }
+    while (*s != 0) {
+        draw_glyph(font, x, y, th, tv, color, background, *s);
+        x += th * 8;
+        s++;
+    }
 }

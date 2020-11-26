@@ -160,4 +160,5 @@ void ssd1339_draw_fill(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, uint16_t 
 void ssd1339_draw_gradient_hfill(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, uint16_t color);
 void ssd1339_draw_gradient_vfill(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, uint16_t color);
 void ssd1339_draw_image(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, const uint16_t *img);
+void ssd1339_draw_char(const uint8_t *font, uint8_t x, uint8_t y, uint16_t color, uint16_t background, const char c);
 void ssd1339_draw_string(const uint8_t *font, uint8_t x, uint8_t y, uint16_t color, uint16_t background, const char *s);
